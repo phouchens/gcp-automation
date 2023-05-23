@@ -34,4 +34,4 @@ jobs:
       - id: 'gcloud'
         name: 'gcloud'
         run: |-
-          gcloud compute instances describe dev --project="devenv-386300"
+          gcloud compute instances describe dev --project="devenv-386300" --zone="us-east1-b"
