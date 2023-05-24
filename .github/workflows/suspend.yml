@@ -1,13 +1,15 @@
-# This is a basic workflow to help you get started with Actions
 
 name: Suspend VM
 
 # Controls when the workflow will run
 on:
+  schedule:
+    # Runs "at 10pm every day"
+    - cron: '0 22 * * *'
+    
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   suspend-vm:
     # Add "id-token" with the intended permissions.
@@ -18,7 +20,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-    # Configure Workload Identity Federation via a credentials file.
+      # Configure Workload Identity Federation via a credentials file.
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v1'
@@ -34,11 +36,12 @@ jobs:
       - id: 'gcloud-describe'
         name: 'gcloud describe'
         run: echo "status=$(gcloud compute instances describe 'dev' --project ${{ vars.PROJECT }} --zone ${{ vars.zone }} --format='value(status)')" >> $GITHUB_OUTPUT
-        
+      
+      # Only run suspend if the VM is running
       - if: steps.gcloud-describe.outputs.status == 'RUNNING'
         name: 'gcloud suspend'
         run: gcloud compute instances suspend "dev" --project ${{ vars.PROJECT }} --zone ${{ vars.zone}}
-        
+      
       - if: steps.gcloud-describe.outputs.status != 'RUNNING'
         name: 'automation not needed'
         run: echo "Dev env is not running"
