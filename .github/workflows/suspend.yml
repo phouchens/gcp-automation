@@ -33,12 +33,12 @@ jobs:
       # Now you can run gcloud commands authenticated as the impersonated service account.
       - id: 'gcloud-describe'
         name: 'gcloud describe'
-        run: echo $(gcloud compute instances describe 'dev' --project ${{ vars.PROJECT }} --zone ${{ vars.zone }} --format='value(status)')
+        run: echo "status=$(gcloud compute instances describe 'dev' --project ${{ vars.PROJECT }} --zone ${{ vars.zone }} --format='value(status)')" >> $GITHUB_OUTPUT
         
-      - if: steps.gcloud-describe.outputs == 'RUNNING'
+      - if: steps.gcloud-describe.outputs.status == 'RUNNING'
         name: 'gcloud suspend'
         run: gcloud compute instances suspend "dev" --project ${{ vars.PROJECT }} --zone ${{ vars.zone}}
         
-      - if: steps.gcloud-describe.outputs != 'RUNNING'
+      - if: steps.gcloud-describe.outputs.status != 'RUNNING'
         name: 'automation not needed'
         run: echo "Dev env is not running"
