@@ -33,7 +33,7 @@ jobs:
       # Now you can run gcloud commands authenticated as the impersonated service account.
       - id: 'gcloud-describe'
         name: 'gcloud describe'
-        run: gcloud compute instances describe 'dev' --project ${{ vars.PROJECT }} --zone ${{ vars.zone }} --format='value(status)'
+        run: echo $(gcloud compute instances describe 'dev' --project ${{ vars.PROJECT }} --zone ${{ vars.zone }} --format='value(status)')
         
       - if: steps.gcloud-describe.outputs == 'RUNNING'
         name: 'gcloud suspend'
